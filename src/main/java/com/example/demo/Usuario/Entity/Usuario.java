@@ -25,7 +25,7 @@ public class Usuario {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)                                                                                                                                     
-    private int id;
+    private long id;
 
     @NotNull
     @Column(name = "nombre")
@@ -45,14 +45,13 @@ public class Usuario {
     inverseJoinColumns = @JoinColumn(name ="rol_id"))
     private  Set<Rol> roles = new HashSet<>();
 
-
+ 
     
     
     
     
     
-    
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 

@@ -11,10 +11,16 @@ import javax.websocket.server.PathParam;
 
 import com.example.demo.Usuario.Entity.Rol;
 import com.example.demo.Usuario.Entity.Usuario;
+import com.example.demo.Usuario.Entity.empresa;
+import com.example.demo.Usuario.Entity.usuario_empresa;
 import com.example.demo.Usuario.Jwt.JwtProvider;
 import com.example.demo.Usuario.Login.RolNombre;
+import com.example.demo.Usuario.Service.EmpresaService;
+import com.example.demo.Usuario.Service.Empresa_UsuarioService;
 import com.example.demo.Usuario.Service.RolService;
 import com.example.demo.Usuario.Service.UsuarioService;
+import com.example.demo.dto.EmpresaModel;
+import com.example.demo.dto.Empresa_UsuarioModel;
 import com.example.demo.dto.JwtDto;
 import com.example.demo.dto.Mensaje;
 import com.example.demo.dto.NuevoUsuario;
@@ -49,6 +55,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class UsuarioController {
 	
+	
+
+
+	@Autowired
+	private EmpresaService empresaServ;
+	
+	@Autowired
+	private Empresa_UsuarioService empresa_userService;
+	
+	
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	
@@ -66,6 +82,7 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioService usuarioService;
+	
 
 	public static Log LOG = LogFactory.getLog(UsuarioController.class);
 	public static Gson gson = new Gson();
@@ -81,7 +98,7 @@ public class UsuarioController {
 			return new ResponseEntity(new Mensaje("Ese nombre ya existe"), HttpStatus.BAD_REQUEST);
 		
 		Usuario user = new Usuario(nuevoUsuario.getName(), nuevoUsuario.getUsername(), passwordEncoder.encode(nuevoUsuario.getPassword()));
-
+		
 		Set<Rol> roles = new HashSet<>();
 		System.out.print(("---------------"+nuevoUsuario.getRol()));
 		
@@ -172,6 +189,58 @@ String jwt = jwtProvider.generateToken(auth);
         }
         return resultado;
 	}
+
+	@RequestMapping(value = "/empresa/user", method = RequestMethod.POST)
+	public ResponseEntity<List<String>> nuevaEmpresa(@Valid @RequestBody Empresa_UsuarioModel empresa, BindingResult bindingResult){
+		if(bindingResult.hasErrors())
+			return new ResponseEntity(new Mensaje("Campos mal puestos o invalidos"), HttpStatus.BAD_REQUEST);
+			List<String> listado =empresa_userService.getUsuario_EmpresByUserID(empresa.getUsuario_Id());
+			
+				try {
+					if(listado.size()==0) {
+						return new ResponseEntity(new Mensaje("Listado Vacio, Posiblemente no se encontró algun dato"), HttpStatus.BAD_REQUEST);
+				
+					}else {
+						
+				return new ResponseEntity<>(listado, HttpStatus.OK);
+					}
+			} catch (HibernateException e) {
+				LOG.info(" Error : " + e.getMessage());
+				return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+	}
+	
+	
+				@RequestMapping(value = "/nuevo/EmpresaUser", method = RequestMethod.POST)
+				public ResponseEntity<?> nuevoEmpresaUser(@Valid @RequestBody Empresa_UsuarioModel empre_userModel, BindingResult bindingResult){
+					if(bindingResult.hasErrors())
+						return new ResponseEntity(new Mensaje("Campos mal puestos o invalidos"), HttpStatus.BAD_REQUEST);
+					if(empresa_userService.getUsuario_EmpresByUserID_EmpresaID(empre_userModel.getUsuario_Id(),empre_userModel.getEmpresa_Id() ))
+						return new ResponseEntity(new Mensaje("Esa Relación ya Existe"), HttpStatus.BAD_REQUEST);
+					
+
+					empresa empr=empresaServ.buscarEmpresaById(empre_userModel.getEmpresa_Id());
+					Usuario user =usuarioService.buscarUserById(empre_userModel.getUsuario_Id());
+					usuario_empresa user_empr = new usuario_empresa();
+					
+						if(empr==null && user==null) 
+							return new ResponseEntity(new Mensaje("Puede que no exista informacion de ese usuario con esa empresa"), HttpStatus.BAD_REQUEST);
+
+						
+						
+						
+						
+						
+						
+							user_empr.setUser(user);
+							user_empr.setEmpresa(empr);
+							empresa_userService.save(user_empr);
+						return	new ResponseEntity(new Mensaje("Relacion Creada Exitosamente"), HttpStatus.CREATED);
+				}	
+					
+					
+						
+	
 
 
 
