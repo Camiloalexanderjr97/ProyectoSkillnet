@@ -131,7 +131,7 @@ public class PersonaController {
 				persona.setName(per.getName());
 				persona.setTipoDocumento(per.getTipoDocumento());
 			}else{
-				return new ResponseEntity(new Mensaje("Persona No encontrada"), HttpStatus.CREATED);
+				return new ResponseEntity(new Mensaje("Persona No encontrada"), HttpStatus.INTERNAL_SERVER_ERROR);
 	
 			}
 	
@@ -151,18 +151,39 @@ public class PersonaController {
 
 
 
-	@RequestMapping(value = "/eliminar/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/eliminar/{doc}", method = RequestMethod.DELETE)
 	@ResponseBody
-	public boolean deleteUsuario(@PathVariable long id) {
+	public boolean deleteUsuario(@PathVariable String doc) {
 		boolean resultado =false;
         try {
-			resultado=personaService.deletePersona(id);
+
+			
+			resultado=personaService.deletePersona(doc);
 			
 			
         } catch (HibernateException e) {
             LOG.error(" Error : " + e.getMessage());
         }
         return resultado;
+	}
+
+	@RequestMapping(value = "/buscarByDoc/{doc}", method = RequestMethod.GET)
+	@ResponseBody
+	public Persona buscarPersonById(@PathVariable String doc) {
+		Persona per =null;
+        try {
+		
+			 per = personaService.loadByDocumento(doc);
+			if(per==null){
+
+				LOG.error(" No encontrado : ");
+
+			}
+			
+        } catch (HibernateException e) {
+            LOG.error(" No encontrado : " + e.getMessage());
+        }
+        return per;
 	}
 
 

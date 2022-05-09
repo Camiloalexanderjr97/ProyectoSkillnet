@@ -33,11 +33,18 @@ public class PersonaService {
 	        return listadoPersona;
 	    }
 
-	    public boolean deletePersona(Long id) {
+	    public boolean deletePersona(String docum) {
 	        boolean resultado =false;
 	        try {
-				personaRepository.deleteById(id);  
-	                 resultado=true;
+				List<Persona> listado = personaRepository.findAll();
+
+				for(Persona per: listado){
+					if(per.getDocumento().equalsIgnoreCase(docum)){
+						personaRepository.deleteById(per.getId());  
+						resultado=true;
+
+					}
+				}
 	        } catch (Exception e) {
 	            //TODO: handle exception
 	        }
