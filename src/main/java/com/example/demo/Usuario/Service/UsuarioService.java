@@ -25,7 +25,6 @@ public class UsuarioService {
 
 	public List<Usuario> getUsuarios() {
 	        List<Usuario> listadoUser = usuarioRepository.findAll();
-	        List<Usuario> lista = new ArrayList<>();
 
 	      
 
@@ -43,9 +42,13 @@ public class UsuarioService {
 	         return resultado;
 	    }
 
-    public  Usuario crearUsuario(Usuario usuario) {
-		return usuarioRepository.save(usuario);
-	}
+		public  Usuario crearUsuario(Usuario usuario) {
+			return usuarioRepository.save(usuario);
+		}
+
+		public  Usuario editUsuario(Usuario usuario) {
+			return usuarioRepository.save(usuario);
+		}
 
     public  boolean loadUserByUsername(String username) {
 		System.out.println("-----------------------------Entra");
@@ -55,6 +58,18 @@ public class UsuarioService {
     	for(Usuario lista : user) {
     		if(lista.getUsername().equalsIgnoreCase(username)) {
     			resultado=true;
+    		}
+    	}
+		return resultado;
+	}
+	public  long loadUserByUsernameReturnID(String username) {
+		System.out.println("-----------------------------Entra");
+
+    	long resultado=0;
+    	List<Usuario> user =  	usuarioRepository.findAll();
+    	for(Usuario lista : user) {
+    		if(lista.getUsername().equalsIgnoreCase(username)) {
+    			resultado=lista.getId();
     		}
     	}
 		return resultado;

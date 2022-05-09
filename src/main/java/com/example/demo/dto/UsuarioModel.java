@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 
 import com.example.demo.Usuario.Entity.Rol;
 
-public class NuevoUsuario {
+public class UsuarioModel {
 	
 	@NotEmpty
 	private Long id;

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Usuario.Entity.Rol;
 import com.example.demo.Usuario.Entity.Usuario;
-import com.example.demo.Usuario.Entity.empresa;
+import com.example.demo.Usuario.Entity.Empresa;
 import com.example.demo.Usuario.Login.RolNombre;
 import com.example.demo.Usuario.Service.EmpresaService;
 import com.example.demo.dto.EmpresaModel;
@@ -46,7 +46,7 @@ public class EmpresaController {
 		if(empresaServ.getEmpresaByNombre(empresa.getNombre()))
 			return new ResponseEntity(new Mensaje("Esa Empresa ya existe"), HttpStatus.BAD_REQUEST);
 		
-		empresa empre = new empresa(empresa.getNombre());
+		Empresa empre = new Empresa(empresa.getNombre());
 		
 		empresaServ.save(empre);
 				return new ResponseEntity(new Mensaje("Empresa Guardada"), HttpStatus.CREATED);

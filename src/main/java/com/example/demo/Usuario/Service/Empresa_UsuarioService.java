@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.Usuario.Entity.Usuario;
-import com.example.demo.Usuario.Entity.empresa;
-import com.example.demo.Usuario.Entity.usuario_empresa;
+import com.example.demo.Usuario.Entity.Empresa;
+import com.example.demo.Usuario.Entity.Usuario_empresa;
 import com.example.demo.Usuario.Repository.Empresa_UsuarioRepository;
 import com.example.demo.Usuario.Repository.empresaRepository;
 
@@ -24,14 +24,14 @@ import com.example.demo.Usuario.Repository.empresaRepository;
 
 	   
 
-	    public List<String> getUsuario_EmpresByUserID(int id){
-	    	List<usuario_empresa> listado= empresa_UsuarioRepository.findAll();
+	    public List<Empresa> getUsuario_EmpresByUserID(int id){
+	    	List<Usuario_empresa> listado= empresa_UsuarioRepository.findAll();
 
-	    	List<String> listadoEmpresa = new ArrayList<>();
+	    	List<Empresa> listadoEmpresa = new ArrayList<>();
 	    	
-	    	for(usuario_empresa lista : listado) {
+	    	for(Usuario_empresa lista : listado) {
 	    		if(lista.getUser().getId()==id) {
-	    			listadoEmpresa.add(lista.getEmpresa().getNombre());
+	    			listadoEmpresa.add(lista.getEmpresa());
 	    		}
 	    	}
 			return listadoEmpresa;
@@ -39,10 +39,10 @@ import com.example.demo.Usuario.Repository.empresaRepository;
 	    
 
 	    public boolean getUsuario_EmpresByUserID_EmpresaID(int user_id, int empresa_id ){
-	    	List<usuario_empresa> listado= empresa_UsuarioRepository.findAll();
+	    	List<Usuario_empresa> listado= empresa_UsuarioRepository.findAll();
 	    		
 	    	boolean respuesta =false;
-	    	for(usuario_empresa lista : listado) {
+	    	for(Usuario_empresa lista : listado) {
 	    		if(lista.getUser().getId()==user_id && lista.getEmpresa().getId()==empresa_id) {
 	    			respuesta=true;
 	    		}
@@ -50,13 +50,13 @@ import com.example.demo.Usuario.Repository.empresaRepository;
 			return respuesta;
 	    }
 	    
-	    public List<usuario_empresa> listado(){
+	    public List<Usuario_empresa> listado(){
 	    	return empresa_UsuarioRepository.findAll();
 	    }
 	    
 	    
 	    
-	    public boolean save(usuario_empresa empr)
+	    public boolean save(Usuario_empresa empr)
 	    { boolean rta=false;
 	    try {
 	    	if(empr!=null) {

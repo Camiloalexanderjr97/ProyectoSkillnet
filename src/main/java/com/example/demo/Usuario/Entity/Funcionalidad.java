@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import com.example.demo.Usuario.Login.RolNombre;
 
 @Entity
-public class Empresa {
+public class Funcionalidad {
 
     @Id
     @Column(name = "id")
@@ -31,43 +31,51 @@ public class Empresa {
     private String nombre;
 
     
-    
-    
-    
-	public Empresa() {
-		super();
+    @Column(name= "descripcion")
+	private String descripcion;
+
+
+	
+
+	public Funcionalidad(@NotNull String nombre, String descripcion) {
+		this.nombre = nombre;
+		this.descripcion = descripcion;
 	}
 
-	public Empresa(int id, @NotNull String nombre) {
-		super();
-		this.id = id;
-		this.nombre = nombre;
+	public Funcionalidad(){
+		
 	}
-	
-	public Empresa( @NotNull String nombre) {
-		super();
-		this.nombre = nombre;
-	}
-	
 
 	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+
+	public void setId(long id) {
 		this.id = id;
 	}
+
 
 	public String getNombre() {
 		return nombre;
 	}
 
+
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-    
-   
-    
+
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
+
+	
     
 
 }

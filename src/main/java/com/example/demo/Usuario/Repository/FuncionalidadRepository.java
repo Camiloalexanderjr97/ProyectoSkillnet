@@ -7,10 +7,12 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.Usuario.Entity.Rol;
 import com.example.demo.Usuario.Entity.Empresa;
+import com.example.demo.Usuario.Entity.Empresa_Funcionalidad;
+import com.example.demo.Usuario.Entity.Funcionalidad;
+import com.example.demo.Usuario.Entity.Usuario_empresa;
 import com.example.demo.Usuario.Login.RolNombre;
 
-@Repository("empresaRepository")
-public interface empresaRepository extends JpaRepository<Empresa, Long> {
+@Repository("funcionalidadRepository.java")
+public interface FuncionalidadRepository extends JpaRepository<Funcionalidad, Long> {
 
-	Empresa findByNombre(String nombre);
 }

@@ -13,6 +13,7 @@ import com.example.demo.Usuario.Entity.Usuario;
 
 public class UsuarioPrincipal implements UserDetails{
 	
+	private long id;
 	private String nombre;
 	private String username;
 	private String password;
@@ -24,6 +25,15 @@ public class UsuarioPrincipal implements UserDetails{
 		// TODO Auto-generated method stub
 		return authorities;
 	}
+
+	
+	public long getid() {
+		return id;
+	}
+
+
+
+
 
 	@Override
 	public String getPassword() {
@@ -61,9 +71,10 @@ public class UsuarioPrincipal implements UserDetails{
 		return true;
 	}
 
-	public UsuarioPrincipal(String nombre, String username, String password,
+	public UsuarioPrincipal(long id, String nombre, String username, String password,
 			Collection<? extends GrantedAuthority> authorities) {
 		super();
+		this.id=id;
 		this.nombre = nombre;
 		this.username = username;
 		this.password = password;
@@ -73,7 +84,7 @@ public class UsuarioPrincipal implements UserDetails{
 	public static UsuarioPrincipal build(Usuario user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream().map(rol -> new SimpleGrantedAuthority(rol.getRolNombre().name())).collect(
 					Collectors.toList());
-		return new UsuarioPrincipal(user.getName(),user.getUsername(),user.getPassword(), authorities);
+		return new UsuarioPrincipal(user.getId(),user.getName(),user.getUsername(),user.getPassword(), authorities);
 		
 	}
 

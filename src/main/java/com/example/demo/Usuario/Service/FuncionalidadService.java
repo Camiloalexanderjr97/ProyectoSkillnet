@@ -9,23 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.Usuario.Entity.Usuario;
 import com.example.demo.Usuario.Entity.Empresa;
+import com.example.demo.Usuario.Entity.Funcionalidad;
+import com.example.demo.Usuario.Repository.FuncionalidadRepository;
 import com.example.demo.Usuario.Repository.empresaRepository;
 
 	@Service
 	@Transactional
-	public class EmpresaService {
+	public class FuncionalidadService {
 	    
 		@Autowired
-		empresaRepository empresaRepositor;
+		FuncionalidadRepository funcionalidadRepository;
 	    // public abstract UsuarioModel getUsusarioUsername(String username);
 
 	   
 
-	    public boolean getEmpresaByNombre(String nombre){
+	    public boolean getFuncionalidadByNombre(String nombre){
 	    	
 	    	boolean resultado=false;
-	    	List<Empresa> empr =  	empresaRepositor.findAll();
-	    	for(Empresa lista : empr) {
+	    	List<Funcionalidad> empr =  	funcionalidadRepository.findAll();
+	    	for(Funcionalidad lista : empr) {
 	    		if(lista.getNombre().equalsIgnoreCase(nombre)) {
 	    			resultado=true;
 	    		}
@@ -36,11 +38,11 @@ import com.example.demo.Usuario.Repository.empresaRepository;
 	    
 	    
 	    
-	    public boolean save(Empresa empr)
+	    public boolean save(Funcionalidad fun)
 	    { boolean rta=false;
 	    try {
 
-	    	empresaRepositor.save(empr);
+	    	funcionalidadRepository.save(fun);
 	    	rta=true;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -48,10 +50,10 @@ import com.example.demo.Usuario.Repository.empresaRepository;
 	    return rta;
 	    }
 	    
-	    public Empresa buscarEmpresaById(long id) {
+	    public Funcionalidad buscarFuncionalidadById(long id) {
 		
 			
-			return empresaRepositor.findById(id).get();
+			return funcionalidadRepository.findById(id).get();
 		}
 	
 }

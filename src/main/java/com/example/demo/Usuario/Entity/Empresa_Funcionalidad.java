@@ -16,7 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class Usuario_empresa {
+public class Empresa_Funcionalidad {
 	
 
     @Id
@@ -25,14 +25,26 @@ public class Usuario_empresa {
 
     @NotNull   
     @ManyToOne
-    @JoinColumn(name = "usuario", referencedColumnName = "id")
-    private  Usuario user;
+    @JoinColumn(name = "funcionalidad", referencedColumnName = "id")
+    private  Funcionalidad funcionalidad;
 
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "empresa", referencedColumnName = "id")
     private Empresa empresa;
+
+	
+
+	
+	public Empresa_Funcionalidad() {
+	}
+
+
+	public Empresa_Funcionalidad(@NotNull Funcionalidad funcionalidad, @NotNull Empresa empresa) {
+		this.funcionalidad = funcionalidad;
+		this.empresa = empresa;
+	}
 
 
 	public int getId() {
@@ -45,13 +57,16 @@ public class Usuario_empresa {
 	}
 
 
-	public Usuario getUser() {
-		return user;
+
+
+
+	public Funcionalidad getFuncionalidad() {
+		return funcionalidad;
 	}
 
 
-	public void setUser(Usuario user) {
-		this.user = user;
+	public void setFuncionalidad(Funcionalidad funcionalidad) {
+		this.funcionalidad = funcionalidad;
 	}
 
 
@@ -65,21 +80,6 @@ public class Usuario_empresa {
 	}
 
 
-	public Usuario_empresa(@NotNull Usuario user, com.example.demo.Usuario.Entity.@NotNull Empresa empresa) {
-		super();
-		this.user = user;
-		this.empresa = empresa;
-	}
-
-
-	public Usuario_empresa() {
-		super();
-	}
-
-    
-    
-    
-
-    
+	
     
 }

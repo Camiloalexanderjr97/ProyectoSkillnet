@@ -11,8 +11,8 @@ import javax.websocket.server.PathParam;
 
 import com.example.demo.Usuario.Entity.Rol;
 import com.example.demo.Usuario.Entity.Usuario;
-import com.example.demo.Usuario.Entity.empresa;
-import com.example.demo.Usuario.Entity.usuario_empresa;
+import com.example.demo.Usuario.Entity.Empresa;
+import com.example.demo.Usuario.Entity.Usuario_empresa;
 import com.example.demo.Usuario.Jwt.JwtProvider;
 import com.example.demo.Usuario.Login.RolNombre;
 import com.example.demo.Usuario.Service.EmpresaService;
@@ -23,7 +23,7 @@ import com.example.demo.dto.EmpresaModel;
 import com.example.demo.dto.Empresa_UsuarioModel;
 import com.example.demo.dto.JwtDto;
 import com.example.demo.dto.Mensaje;
-import com.example.demo.dto.NuevoUsuario;
+import com.example.demo.dto.UsuarioModel;
 import com.example.demo.dto.loginUsuario;
 import com.google.gson.Gson;
 
@@ -91,7 +91,7 @@ public class UsuarioController {
 
 	
 	@RequestMapping(value = "/nuevo", method = RequestMethod.POST)
-	public ResponseEntity<?> nuevo(@Valid @RequestBody NuevoUsuario nuevoUsuario, BindingResult bindingResult){
+	public ResponseEntity<?> nuevo(@Valid @RequestBody UsuarioModel nuevoUsuario, BindingResult bindingResult){
 		if(bindingResult.hasErrors())
 			return new ResponseEntity(new Mensaje("Campos mal puestos o invalidos"), HttpStatus.BAD_REQUEST);
 		if(usuarioService.loadUserByUsername(nuevoUsuario.getUsername()))
@@ -122,19 +122,20 @@ public class UsuarioController {
 				authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login.getUsername(),login.getPassword()));
 SecurityContextHolder.getContext().setAuthentication(auth);
 String jwt = jwtProvider.generateToken(auth);
+  long id = usuarioService.loadUserByUsernameReturnID(login.getUsername());
 		UserDetails userDe = (UserDetails) auth.getPrincipal();
-		JwtDto jwtDto = new JwtDto(jwt, userDe.getUsername(), userDe.getAuthorities());
+		JwtDto jwtDto = new JwtDto(jwt,id, userDe.getUsername(), userDe.getAuthorities());
 		return new ResponseEntity(jwtDto, HttpStatus.OK);
-	}
+	} 
 
-	
+	 
 	@RequestMapping(value = "/users", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<List<Usuario>> getAllReHospitalario() {
-		List<Usuario> listaReHoReturn = null;
+	public ResponseEntity<List<Usuario>> getUsuarios() {
+		List<Usuario> listado = null;
 		try {
-			listaReHoReturn = usuarioService.getUsuarios();
-			return new ResponseEntity<>(listaReHoReturn, HttpStatus.OK);
+			listado = usuarioService.getUsuarios();
+			return new ResponseEntity<>(listado, HttpStatus.OK);
 		} catch (HibernateException e) {
 			LOG.info(" Error : " + e.getMessage());
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -146,8 +147,7 @@ String jwt = jwtProvider.generateToken(auth);
 	@ResponseBody
 	public ResponseEntity<Usuario> addUsuario(@RequestBody Usuario user) {
 		HashMap<String, String> msg = new HashMap<>();
-		Usuario usuario = null;
-		LOG.info("ESTA ENTRANDO AL CONTROLLER DE RESIDUOS PROFESIONALES");
+		Usuario usuario = usuarioService.crearUsuario(user);
 		try {
 			
 			usuario = usuarioService.crearUsuario(user);
@@ -159,12 +159,45 @@ String jwt = jwtProvider.generateToken(auth);
 		}
 	}
 
+
+	@RequestMapping(value = "/users/edit", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<Usuario> editarUsuario(@RequestBody Usuario user) {
+		HashMap<String, String> msg = new HashMap<>();
+		Usuario usuario = usuarioService.crearUsuario(user);
+		try {
+			
+			usuario = usuarioService.editUsuario(user);
+			
+			return new ResponseEntity<>(usuario, HttpStatus.OK);
+		} catch (HibernateException e) {
+			LOG.error("Error: " + e.getMessage());
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/users", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<List<Usuario>> listado(@RequestBody Usuario user) {
+		HashMap<String, String> msg = new HashMap<>();
+		Usuario usuario = usuarioService.crearUsuario(user);
+		try {
+			
+			List<Usuario> usuarios = usuarioService.getUsuarios();
+			
+			return new ResponseEntity<>(usuarios, HttpStatus.OK);
+		} catch (HibernateException e) {
+			LOG.error("Error: " + e.getMessage());
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/users/buscar/{username}", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<Optional<Usuario>> addUsuario(@PathVariable String username) {
+	public ResponseEntity<Usuario> addUsuario(@PathVariable String username) {
 		HashMap<String, String> msg = new HashMap<>();
-		Optional<Usuario> usuario = null;
-		LOG.info("ESTA ENTRANDO AL CONTROLLER DE RESIDUOS PROFESIONALES");
+		Usuario usuario = null;
+		
 		try {
 			
 			usuario =  null;
@@ -175,6 +208,9 @@ String jwt = jwtProvider.generateToken(auth);
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+
+
 
 	@RequestMapping(value = "/users/eliminar/{id}", method = RequestMethod.DELETE)
 	@ResponseBody
@@ -191,10 +227,10 @@ String jwt = jwtProvider.generateToken(auth);
 	}
 
 	@RequestMapping(value = "/empresa/user", method = RequestMethod.POST)
-	public ResponseEntity<List<String>> nuevaEmpresa(@Valid @RequestBody Empresa_UsuarioModel empresa, BindingResult bindingResult){
+	public ResponseEntity<List<Empresa>> nuevaEmpresa(@Valid @RequestBody Empresa_UsuarioModel empresa, BindingResult bindingResult){
 		if(bindingResult.hasErrors())
 			return new ResponseEntity(new Mensaje("Campos mal puestos o invalidos"), HttpStatus.BAD_REQUEST);
-			List<String> listado =empresa_userService.getUsuario_EmpresByUserID(empresa.getUsuario_Id());
+			List<Empresa> listado =empresa_userService.getUsuario_EmpresByUserID(empresa.getUsuario_Id());
 			
 				try {
 					if(listado.size()==0) {
@@ -219,18 +255,14 @@ String jwt = jwtProvider.generateToken(auth);
 						return new ResponseEntity(new Mensaje("Esa Relación ya Existe"), HttpStatus.BAD_REQUEST);
 					
 
-					empresa empr=empresaServ.buscarEmpresaById(empre_userModel.getEmpresa_Id());
+					Empresa empr=empresaServ.buscarEmpresaById(empre_userModel.getEmpresa_Id());
 					Usuario user =usuarioService.buscarUserById(empre_userModel.getUsuario_Id());
-					usuario_empresa user_empr = new usuario_empresa();
+					Usuario_empresa user_empr = new Usuario_empresa();
 					
 						if(empr==null && user==null) 
 							return new ResponseEntity(new Mensaje("Puede que no exista informacion de ese usuario con esa empresa"), HttpStatus.BAD_REQUEST);
 
-						
-						
-						
-						
-						
+								
 						
 							user_empr.setUser(user);
 							user_empr.setEmpresa(empr);
